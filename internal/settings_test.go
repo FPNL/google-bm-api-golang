@@ -10,8 +10,9 @@ import (
 	"net/http"
 	"testing"
 
-	"google.golang.org/api/internal/impersonate"
 	"google.golang.org/grpc"
+
+	"github.com/FPNL/google-bm-api-golang/internal/impersonate"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"

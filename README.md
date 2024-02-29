@@ -1,10 +1,8 @@
 # Declaration
 
-Most of these codes are from [google-api-go-client](https://github.com/googleapis/google-api-go-client?tab=readme-ov-file).
+Most of these codes are from [google-api-go-client](https://github.com/googleapis/google-api-go-client?tab=readme-ov-file). Please let me know if anything is offensive. 
 Google Business message API doesn't get from that repo, for it defined a private API, 
 so I generate it from the discovery document through [google-api-go-client](https://github.com/googleapis/google-api-go-client?tab=readme-ov-file).
-
-# Developer Guide
 
 # Gen from Google Business Message API
 1. Download the discovery document
@@ -13,7 +11,7 @@ so I generate it from the discovery document through [google-api-go-client](http
 ```shell
 go install google.golang.org/api/google-api-go-generator
 google-api-go-generator --api_json_file "path/to/file/from/first_step_discover.json" -gendir "."
-# 這裡要替換掉原本的 google.golang.org/api/internal
+# replace google.golang.org/api/internal
 sed -i='' 's_google.golang.org/api/internal_github.com/FPNL/google-bm-api-golang/internal_g' businessmessages/v1/businessmessages-gen.go
 ```
 

@@ -2,10 +2,10 @@ package main
 
 import "github.com/FPNL/google-bm-api-golang/businessmessages/v1"
 
-// UserMessage 表示使用者收到的訊息
+// UserMessage Received from user
 // https://developers.google.com/business-communications/business-messages/reference/rest/v1/UserMessage
 type UserMessage struct {
-	// 這兩個參數並不包含在 User Message。代理在設定 callback 會用到，因此為了方便 json.Unmarshal，這裡也加上
+	// ClientToken, Secret didn't contained in UserMessage. But it's convenience for json.Unmarshal when Agent verify webhook callback.
 	// https://developers.google.com/business-communications/business-messages/guides/how-to/agents#webhook
 	ClientToken string `json:"clientToken"`
 	Secret      string `json:"secret"`
