@@ -1,0 +1,648 @@
+{
+  "id": "businessmessages:v1",
+  "resources": {
+    "conversations": {
+      "resources": {
+        "surveys": {
+          "methods": {
+            "create": {
+              "parameterOrder": [
+                "parent"
+              ],
+              "id": "businessmessages.conversations.surveys.create",
+              "response": {
+                "$ref": "BusinessMessagesSurvey"
+              },
+              "httpMethod": "POST",
+              "request": {
+                "$ref": "BusinessMessagesSurvey"
+              },
+              "flatPath": "v1/conversations/{conversationsId}/surveys",
+              "description": "Creates a customer satisfaction survey in a conversation. If an agent sends multiple surveys in the same conversation within 24 hours, Business Messages only attempts to send the first survey to the user.",
+              "parameters": {
+                "parent": {
+                  "type": "string",
+                  "description": "Required. The conversation that contains the survey. Resolves to \"conversations/{conversationId}\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^conversations/[^/]+$"
+                },
+                "surveyId": {
+                  "type": "string",
+                  "location": "query",
+                  "description": "The unique identifier of the survey, assigned by the agent. If a survey attempts to use the same `surveyId` as a previous survey, Business Messages ignores the request."
+                }
+              },
+              "path": "v1/{+parent}/surveys"
+            }
+          }
+        },
+        "messages": {
+          "methods": {
+            "create": {
+              "parameters": {
+                "parent": {
+                  "required": true,
+                  "description": "Required. The conversation that contains the message. Resolves to \"conversations/{conversationId}\".",
+                  "location": "path",
+                  "pattern": "^conversations/[^/]+$",
+                  "type": "string"
+                },
+                "forceFallback": {
+                  "location": "query",
+                  "type": "boolean",
+                  "description": "Optional. A flag to send the specified fallback text instead of other message content. Only available to agents that aren't launched. If the flag is true and fallback text isn't specified, Business Messages returns an error."
+                }
+              },
+              "id": "businessmessages.conversations.messages.create",
+              "flatPath": "v1/conversations/{conversationsId}/messages",
+              "request": {
+                "$ref": "BusinessMessagesMessage"
+              },
+              "description": "Sends a message from an agent to a user. If a conversation doesn't exist or an agent tries to send a message in a conversation that it isn't authorized to participate in, returns a `PERMISSION DENIED` error.",
+              "path": "v1/{+parent}/messages",
+              "response": {
+                "$ref": "BusinessMessagesMessage"
+              },
+              "httpMethod": "POST",
+              "parameterOrder": [
+                "parent"
+              ]
+            },
+            "updateReceipt": {
+              "parameterOrder": [
+                "name"
+              ],
+              "path": "v1/{+name}",
+              "id": "businessmessages.conversations.messages.updateReceipt",
+              "response": {
+                "$ref": "BusinessMessagesReceipt"
+              },
+              "description": "Sends a receipt for a message from an agent to a user.",
+              "request": {
+                "$ref": "BusinessMessagesReceipt"
+              },
+              "parameters": {
+                "name": {
+                  "required": true,
+                  "pattern": "^conversations/[^/]+/messages/[^/]+/receipt$",
+                  "description": "The name of the receipt, as set by Business Messages. Resolves to \"conversations/{conversationId}/messages/{messageId}/receipt\", where {conversationId} is the unique ID for the conversation and {messageId} is the unique ID for the message.",
+                  "type": "string",
+                  "location": "path"
+                }
+              },
+              "httpMethod": "PATCH",
+              "flatPath": "v1/conversations/{conversationsId}/messages/{messagesId}/receipt"
+            }
+          }
+        },
+        "events": {
+          "methods": {
+            "create": {
+              "httpMethod": "POST",
+              "parameters": {
+                "eventId": {
+                  "location": "query",
+                  "type": "string",
+                  "description": "The unique identifier of the event, assigned by the agent. If an event has the same `eventId` as a previous event in the conversation, Business Messages returns an `ALREADY_EXISTS` error."
+                },
+                "parent": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Required. The conversation that contains the message. Resolves to \"conversations/{conversationId}\".",
+                  "pattern": "^conversations/[^/]+$"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "BusinessMessagesEvent"
+              },
+              "id": "businessmessages.conversations.events.create",
+              "description": "Creates an event in a conversation.",
+              "flatPath": "v1/conversations/{conversationsId}/events",
+              "response": {
+                "$ref": "BusinessMessagesEvent"
+              },
+              "path": "v1/{+parent}/events"
+            }
+          }
+        }
+      }
+    }
+  },
+  "schemas": {
+    "BusinessMessagesOpenUrlAction": {
+      "id": "BusinessMessagesOpenUrlAction",
+      "type": "object",
+      "description": "Opens the specified URL.",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL"
+        }
+      }
+    },
+    "BusinessMessagesMessage": {
+      "description": "A message in a conversation between an agent and a user.",
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "description": "Required. The unique identifier of the message, assigned by the agent. If a message attempts to use the same `messageId` as a previous message, the proper delivery of the message could be affected.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the message, as set by Business Messages. Resolves to \"conversations/{conversationId}/messages/{messageId}\", where {conversationId} is the unique ID for the conversation and {messageId} is the unique ID for the message.",
+          "type": "string"
+        },
+        "fallback": {
+          "type": "string",
+          "description": "Optional. Fallback text that displays if the user's device doesn't support the message type or content. Maximum 3,072 characters."
+        },
+        "richCard": {
+          "description": "Rich Card message.",
+          "$ref": "BusinessMessagesRichCard"
+        },
+        "containsRichText": {
+          "description": "Optional. If `true`, indicates that the message contains rich text. If the message contains invalid formatting, Business Messages returns an error.",
+          "type": "boolean"
+        },
+        "representative": {
+          "description": "Details about the representative (human or chatbot) that sent the message.",
+          "$ref": "BusinessMessagesRepresentative"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text message. Maximum 3,072 characters."
+        },
+        "suggestions": {
+          "description": "A list of suggested replies that appear as a list of suggestion chips following the associated message. Maximum 13 suggestions. The chips only display when the associated message is the most recent message within the conversation (including both agent and user messages). The user can tap a suggested reply to send the text reply to the agent.",
+          "type": "array",
+          "items": {
+            "$ref": "BusinessMessagesSuggestion"
+          }
+        },
+        "image": {
+          "description": "Image message.",
+          "$ref": "BusinessMessagesImage"
+        }
+      },
+      "id": "BusinessMessagesMessage"
+    },
+    "BusinessMessagesAuthenticationRequest": {
+      "description": "Request to authenticate a conversation.",
+      "id": "BusinessMessagesAuthenticationRequest",
+      "properties": {
+        "oauth": {
+          "$ref": "BusinessMessagesAuthenticationRequestOauth",
+          "description": "Details for authentication via OAuth."
+        }
+      },
+      "type": "object"
+    },
+    "BusinessMessagesSuggestedReply": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Text that is shown in the suggested reply and sent to the agent when the user taps it. Maximum 25 characters."
+        },
+        "postbackData": {
+          "description": "The string that the agent receives when a user taps the suggested reply. Maximum 2,048 characters.",
+          "type": "string"
+        }
+      },
+      "id": "BusinessMessagesSuggestedReply",
+      "description": "When tapped, sends the text reply back to the agent."
+    },
+    "BusinessMessagesRichCard": {
+      "type": "object",
+      "id": "BusinessMessagesRichCard",
+      "properties": {
+        "carouselCard": {
+          "description": "Carousel of cards.",
+          "$ref": "BusinessMessagesCarouselCard"
+        },
+        "standaloneCard": {
+          "$ref": "BusinessMessagesStandaloneCard",
+          "description": "Standalone card."
+        }
+      },
+      "description": "A standalone rich card or a carousel of rich cards sent from the agent to the user."
+    },
+    "BusinessMessagesMedia": {
+      "description": "A media file within a rich card.",
+      "properties": {
+        "contentInfo": {
+          "$ref": "BusinessMessagesContentInfo",
+          "description": "Information about a file, including the URL of the file and the URL of the file's thumbnail."
+        },
+        "height": {
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "112 DP.",
+            "168 DP.",
+            "264 DP. Not available for rich card carousels when the card width is set to SMALL."
+          ],
+          "description": "The height of the media within a rich card.",
+          "enum": [
+            "HEIGHT_UNSPECIFIED",
+            "SHORT",
+            "MEDIUM",
+            "TALL"
+          ]
+        }
+      },
+      "id": "BusinessMessagesMedia",
+      "type": "object"
+    },
+    "BusinessMessagesImage": {
+      "type": "object",
+      "id": "BusinessMessagesImage",
+      "description": "An image.",
+      "properties": {
+        "contentInfo": {
+          "$ref": "BusinessMessagesContentInfo",
+          "description": "Information about an image, including the URL of the image and the URL of the image's thumbnail."
+        }
+      }
+    },
+    "BusinessMessagesDialAction": {
+      "id": "BusinessMessagesDialAction",
+      "description": "Opens the user's default dialer app with the specified phone number filled in.",
+      "properties": {
+        "phoneNumber": {
+          "description": "Required. The specified phone number, in [RFC 3966](https://tools.ietf.org/html/rfc3966) format. For example, \"+1-201-555-0123\".",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BusinessMessagesCarouselCard": {
+      "description": "Carousel of cards.",
+      "id": "BusinessMessagesCarouselCard",
+      "type": "object",
+      "properties": {
+        "cardWidth": {
+          "description": "The width of the cards in the carousel.",
+          "enum": [
+            "CARD_WIDTH_UNSPECIFIED",
+            "SMALL",
+            "MEDIUM"
+          ],
+          "enumDescriptions": [
+            "Not specified",
+            "136 DP. Can't include tall media.",
+            "280 DP."
+          ],
+          "type": "string"
+        },
+        "cardContents": {
+          "type": "array",
+          "description": "The list of contents for each card in the carousel. A carousel can have a minimum of 2 cards and a maximum 10 cards.",
+          "items": {
+            "$ref": "BusinessMessagesCardContent"
+          }
+        }
+      }
+    },
+    "BusinessMessagesSuggestedAction": {
+      "description": "When tapped, initiates the corresponding native action on the device.",
+      "type": "object",
+      "id": "BusinessMessagesSuggestedAction",
+      "properties": {
+        "text": {
+          "description": "Text that is shown in the suggested action. Maximum 25 characters.",
+          "type": "string"
+        },
+        "postbackData": {
+          "description": "The string that the agent receives when a user taps the suggested action. Maximum 2,048 characters.",
+          "type": "string"
+        },
+        "openUrlAction": {
+          "description": "Opens the specified URL.",
+          "$ref": "BusinessMessagesOpenUrlAction"
+        },
+        "dialAction": {
+          "$ref": "BusinessMessagesDialAction",
+          "description": "Opens the user's default dialer app."
+        }
+      }
+    },
+    "BusinessMessagesSuggestion": {
+      "description": "A suggestion within a chip list.",
+      "id": "BusinessMessagesSuggestion",
+      "properties": {
+        "action": {
+          "$ref": "BusinessMessagesSuggestedAction",
+          "description": "A suggested action that initiates a native action on the device."
+        },
+        "liveAgentRequest": {
+          "$ref": "BusinessMessagesLiveAgentRequest",
+          "description": "A request to have a live agent join the conversation."
+        },
+        "authenticationRequest": {
+          "description": "A request to start authentication flow.",
+          "$ref": "BusinessMessagesAuthenticationRequest"
+        },
+        "reply": {
+          "description": "A suggestion for the user to reply with specified text.",
+          "$ref": "BusinessMessagesSuggestedReply"
+        }
+      },
+      "type": "object"
+    },
+    "BusinessMessagesEvent": {
+      "description": "An event in a conversation between an agent and a user.",
+      "id": "BusinessMessagesEvent",
+      "properties": {
+        "eventType": {
+          "enumDescriptions": [
+            "Not specified.",
+            "The representative is typing.",
+            "The representative stopped typing.",
+            "The representative joined the conversation.",
+            "The representative left the conversation."
+          ],
+          "type": "string",
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "TYPING_STARTED",
+            "TYPING_STOPPED",
+            "REPRESENTATIVE_JOINED",
+            "REPRESENTATIVE_LEFT"
+          ],
+          "description": "The type of the event."
+        },
+        "representative": {
+          "$ref": "BusinessMessagesRepresentative",
+          "description": "Details about the representative (human or chatbot) that sent the event."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the event, as set by Business Messages. Resolves to \"conversations/{conversationId}/events/{eventId}\", where {conversationId} is the unique ID for the conversation and {eventId} is the unique ID for the event."
+        }
+      },
+      "type": "object"
+    },
+    "BusinessMessagesContentInfo": {
+      "type": "object",
+      "id": "BusinessMessagesContentInfo",
+      "description": "Message containing the content information.",
+      "properties": {
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "Optional. Publicly reachable URL of the thumbnail. If you don't provide a thumbnail URL, the platform displays a blank placeholder thumbnail until the user's device downloads the file. Maximum 25 KB. Supported content types: image/jpeg, image/jpg, image/png, image/webp"
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "Publicly reachable URL of the file. The platform determines the MIME type of the file from the content-type field in the HTTP headers when the platform fetches the file. The content-type field must be present and accurate in the HTTP response from the URL. Maximum 5 MB. Supported content types: image/jpeg, image/jpg, image/png, image/webp"
+        },
+        "altText": {
+          "type": "string",
+          "description": "Text describing the details about the media for accessibility purposes."
+        },
+        "forceRefresh": {
+          "description": "If set, the platform fetches the file and thumbnail from the specified URLs, even if the platform has cached copies of the file (and/or of the thumbnail).",
+          "type": "boolean"
+        }
+      }
+    },
+    "BusinessMessagesReceipt": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the receipt, as set by Business Messages. Resolves to \"conversations/{conversationId}/messages/{messageId}/receipt\", where {conversationId} is the unique ID for the conversation and {messageId} is the unique ID for the message."
+        },
+        "receiptType": {
+          "enum": [
+            "RECEIPT_TYPE_UNSPECIFIED",
+            "READ"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified receipt type.",
+            "Message read."
+          ],
+          "description": "A receipt type."
+        }
+      },
+      "id": "BusinessMessagesReceipt",
+      "type": "object",
+      "description": "A receipt of the message."
+    },
+    "BusinessMessagesSurvey": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the survey, as set by Business Messages. Resolves to \"conversations/{conversationId}/surveys/{surveyId}\", where {conversationId} is the unique ID for the conversation and {surveyId} is the unique ID for the survey."
+        }
+      },
+      "description": "A survey to measure customer satisfaction.",
+      "type": "object",
+      "id": "BusinessMessagesSurvey"
+    },
+    "BusinessMessagesAuthenticationRequestOauth": {
+      "properties": {
+        "codeChallenge": {
+          "description": "Required. The [code challenge](https://tools.ietf.org/html/rfc7636#section-4.2) used to exchange access tokens.",
+          "type": "string"
+        },
+        "codeChallengeMethod": {
+          "description": "Optional. The [code challenge method](https://www.oauth.com/oauth2-servers/pkce/authorization-request/) used to generate the code challenge. If this parameter is omitted, the server assumes `plain`.",
+          "type": "string"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required. An array that specifies the [scopes](https://oauth.net/2/scope/) of the request."
+        },
+        "clientId": {
+          "type": "string",
+          "description": "Required. The [ID](https://www.oauth.com/oauth2-servers/client-registration/client-id-secret/) of the application that asks for authorization."
+        }
+      },
+      "id": "BusinessMessagesAuthenticationRequestOauth",
+      "description": "Details for authentication via OAuth.",
+      "type": "object"
+    },
+    "BusinessMessagesLiveAgentRequest": {
+      "type": "object",
+      "id": "BusinessMessagesLiveAgentRequest",
+      "properties": {},
+      "description": "When tapped, sends a request for a live agent to join the conversation."
+    },
+    "BusinessMessagesCardContent": {
+      "type": "object",
+      "id": "BusinessMessagesCardContent",
+      "description": "Card content.",
+      "properties": {
+        "title": {
+          "description": "Optional. Title of the card. Maximum 200 characters.",
+          "type": "string"
+        },
+        "suggestions": {
+          "description": "Optional. List of suggestions to include in the card. Maximum 4 suggestions.",
+          "type": "array",
+          "items": {
+            "$ref": "BusinessMessagesSuggestion"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional. Description of the card. Maximum 2,000 characters."
+        },
+        "media": {
+          "description": "Optional. Media to include in the card.",
+          "$ref": "BusinessMessagesMedia"
+        }
+      }
+    },
+    "BusinessMessagesRepresentative": {
+      "properties": {
+        "representativeType": {
+          "type": "string",
+          "enum": [
+            "REPRESENTATIVE_TYPE_UNSPECIFIED",
+            "BOT",
+            "HUMAN"
+          ],
+          "enumDescriptions": [
+            "Unspecified representative type.",
+            "Bot representative.",
+            "Human representative."
+          ],
+          "description": "Required. The type of representative."
+        },
+        "avatarImage": {
+          "description": "Optional. The representative's avatar image, as a publicly available URL. Displays as a circle. Avatar images don't support personal information, such as depictions of representatives in photographs or illustrations. Use images that don't identify individuals, such as icons, logos, or fictitious illustrations. After an avatar image is used in a message, the image can't be modified or deleted. Images must be 1024x1024 px and have a maximum files size of 50 KB.",
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Optional. Name of the representative."
+        }
+      },
+      "description": "Details about the representative (human or chatbot) that sent the message.",
+      "type": "object",
+      "id": "BusinessMessagesRepresentative"
+    },
+    "BusinessMessagesStandaloneCard": {
+      "description": "Standalone card.",
+      "properties": {
+        "cardContent": {
+          "description": "Card content.",
+          "$ref": "BusinessMessagesCardContent"
+        }
+      },
+      "id": "BusinessMessagesStandaloneCard",
+      "type": "object"
+    }
+  },
+  "title": "Business Messages API",
+  "revision": "20240228",
+  "version": "v1",
+  "discoveryVersion": "v1",
+  "kind": "discovery#restDescription",
+  "parameters": {
+    "key": {
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query",
+      "type": "string"
+    },
+    "quotaUser": {
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query",
+      "type": "string"
+    },
+    "$.xgafv": {
+      "location": "query",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "type": "string",
+      "description": "V1 error format."
+    },
+    "upload_protocol": {
+      "location": "query",
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\")."
+    },
+    "callback": {
+      "description": "JSONP",
+      "type": "string",
+      "location": "query"
+    },
+    "alt": {
+      "description": "Data format for response.",
+      "location": "query",
+      "default": "json",
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "type": "string",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ]
+    },
+    "uploadType": {
+      "location": "query",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "type": "string"
+    },
+    "access_token": {
+      "type": "string",
+      "location": "query",
+      "description": "OAuth access token."
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "location": "query",
+      "default": "true",
+      "description": "Returns response with indentations and line breaks."
+    },
+    "fields": {
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query",
+      "type": "string"
+    },
+    "oauth_token": {
+      "description": "OAuth 2.0 token for the current user.",
+      "type": "string",
+      "location": "query"
+    }
+  },
+  "ownerName": "Google",
+  "name": "businessmessages",
+  "ownerDomain": "google.com",
+  "icons": {
+    "x32": "http://www.google.com/images/icons/product/search-32.gif",
+    "x16": "http://www.google.com/images/icons/product/search-16.gif"
+  },
+  "baseUrl": "https://businessmessages.googleapis.com/",
+  "version_module": true,
+  "batchPath": "batch",
+  "documentationLink": "https://developers.google.com/business-communications/business-messages/home/",
+  "fullyEncodeReservedExpansion": true,
+  "canonicalName": "Businessmessages",
+  "servicePath": "",
+  "protocol": "rest",
+  "basePath": "",
+  "rootUrl": "https://businessmessages.googleapis.com/",
+  "description": "",
+  "mtlsRootUrl": "https://businessmessages.mtls.googleapis.com/"
+}
